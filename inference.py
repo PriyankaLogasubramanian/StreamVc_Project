@@ -20,7 +20,7 @@ def main(args):
 
     encoder_state_dict = st.torch.load_file(args.checkpoint, device=DEVICE)
 
-    model.load_state_dict(encoder_state_dict)
+    model.load_state_dict(encoder_state_dict,  strict=False)
 
     source_speech, orig_sr = sf.read(args.source_speech)
     source_speech = torch.from_numpy(
@@ -35,7 +35,10 @@ def main(args):
         target_speech = F.resample(target_speech, orig_sr, SAMPLE_RATE)
 
     output = model(source_speech, target_speech)
+
+    output = output.cpu().numpy()
     sf.write(args.output_path, output, SAMPLE_RATE)
+
 
 
 if __name__ == '__main__':
